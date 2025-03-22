@@ -42,9 +42,7 @@ ar_personal_cards/
 │ ├── models/ # 3D models (GLTF)
 │ └── index.html # Main application file
 ├── server.js # Express server configuration
-├── node_modules/ # Node modules
 ├── package.json # Project dependencies
-├── package-lock.json # Project dependencies
 └── README.md # Project documentation
 ```
 
