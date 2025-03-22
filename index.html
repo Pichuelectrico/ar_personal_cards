@@ -198,7 +198,7 @@
     </div>
 
     <a-scene
-      mindar-image="imageTargetSrc: ./markers/target.mind; autoStart: false;"
+      mindar-image="imageTargetSrc: ./markers/target.mind; autoStart: false; warmupTolerance: 2; filterMinCF:0.1; filterBeta: 10;"
       color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
@@ -258,7 +258,7 @@
 
         <a-video
           src="#main-video"
-          position="1.3 0 0"
+          position="1.1 0 0"
           width="1"
           height="0.552"
           rotation="0 0 0"
@@ -272,7 +272,7 @@
           id="malla-academica"
           class="clickable"
           src="#malla-img"
-          position="-1.3 0 0"
+          position="-1.1 0 0"
           width="1"
           height="0.552"
           rotation="0 0 0"
@@ -284,7 +284,7 @@
           id="icon-linkedin"
           class="clickable"
           src="#linkedin-icon"
-          position="-0.6 -0.5 0"
+          position="-0.6 -0.4 0"
           width="0.2"
           height="0.2"
           clickable
@@ -296,7 +296,7 @@
           id="icon-github"
           class="clickable"
           src="#github-icon"
-          position="-0.2 -0.5 0"
+          position="-0.2 -0.4 0"
           width="0.2"
           height="0.2"
           clickable
@@ -308,7 +308,7 @@
           id="icon-instagram"
           class="clickable"
           src="#instagram-icon"
-          position="0.2 -0.5 0"
+          position="0.2 -0.4 0"
           width="0.2"
           height="0.2"
           clickable
@@ -319,7 +319,7 @@
           id="icon-web"
           class="clickable"
           src="#web-icon"
-          position="0.6 -0.5 0"
+          position="0.6 -0.4 0"
           width="0.2"
           height="0.2"
           clickable
@@ -331,7 +331,7 @@
           id="icon-youtube"
           class="clickable"
           src="#youtube-icon"
-          position="0.86 -0.3 0"
+          position="0.8 -0.3 0"
           width="0.16"
           height="0.16"
           clickable
