@@ -28,7 +28,6 @@
           this.startTime = null;
           this.mallaEl = document.querySelector("#malla-academica");
           this.videoEl = document.querySelector("#main-video");
-          // Inicializar referencias a los elementos
           this.el.sceneEl.addEventListener("loaded", () => {
             this.icons = [
               document.querySelector("#icon-linkedin"),
@@ -40,7 +39,6 @@
             if (this.videoEl) {
               this.videoEl.muted = true;
 
-              // Manejar eventos de target
               this.el.sceneEl.addEventListener("targetFound", () => {
                 console.log("Target encontrado - reproduciendo video");
                 this.videoEl.play().catch(function (error) {
@@ -60,7 +58,6 @@
           if (!this.startTime) this.startTime = time;
           const elapsedTime = (time - this.startTime) / 1000;
 
-          // Animar iconos
           this.icons.forEach((icon, index) => {
             if (!icon) return;
 
@@ -128,7 +125,6 @@
             }
           });
 
-          // Reiniciar video cuando termine si no está en loop
           video.addEventListener("ended", () => {
             video.currentTime = 0;
             video.play();
@@ -144,7 +140,6 @@
           arSystem = sceneEl.systems["mindar-image-system"];
         });
 
-        // Controles UI
         const startButton = document.querySelector("#start-button");
         const stopButton = document.querySelector("#stop-button");
         const pauseButton = document.querySelector("#pause-button");
@@ -160,7 +155,6 @@
           muteButton.textContent = videoEl.muted ? "Unmute" : "Mute";
         });
 
-        // Eventos AR
         sceneEl.addEventListener("arReady", () => {
           console.log("AR está listo");
         });
@@ -178,19 +172,16 @@
           mesh.material.transparent = true;
           mesh.material.alphaTest = 0.5;
 
-          // Crear un canvas para la máscara de bordes redondeados
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
           canvas.width = 1024;
           canvas.height = 1024;
 
-          // Dibujar rectángulo redondeado
           ctx.beginPath();
-          ctx.roundRect(0, 0, canvas.width, canvas.height, 60); // El valor 60 ajusta el radio de las esquinas
+          ctx.roundRect(0, 0, canvas.width, canvas.height, 60);
           ctx.fillStyle = "white";
           ctx.fill();
 
-          // Crear textura de máscara
           const maskTexture = new THREE.CanvasTexture(canvas);
           mesh.material.alphaMap = maskTexture;
           mesh.material.needsUpdate = true;
@@ -256,7 +247,6 @@
         >
         </a-plane>
 
-        <!-- Modelo 3D -->
         <a-gltf-model
           rotation="0 0 0"
           position="0 0.4 0.1"
@@ -266,7 +256,6 @@
         >
         </a-gltf-model>
 
-        <!-- Video principal -->
         <a-video
           src="#main-video"
           position="1.3 0 0"
@@ -291,7 +280,6 @@
           rounded
         ></a-image>
 
-        <!-- Iconos sociales -->
         <a-image
           id="icon-linkedin"
           class="clickable"
