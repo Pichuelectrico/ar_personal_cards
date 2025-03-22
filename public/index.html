@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      .controls {
+        position: absolute;
+        z-index: 1000;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .controls button {
+        padding: 8px 15px;
+        margin: 0 5px;
+        border-radius: 5px;
+      }
+    </style>
+    <script>
+      AFRAME.registerComponent("ar-controller", {
+        init: function () {
+          this.icons = [];
+          this.startTime = null;
+          this.mallaEl = document.querySelector("#malla-academica");
+          this.videoEl = document.querySelector("#main-video");
+          // Inicializar referencias a los elementos
+          this.el.sceneEl.addEventListener("loaded", () => {
+            this.icons = [
+              document.querySelector("#icon-linkedin"),
+              document.querySelector("#icon-github"),
+              document.querySelector("#icon-instagram"),
+              document.querySelector("#icon-web"),
+              document.querySelector("#icon-youtube"),
+            ];
+            if (this.videoEl) {
+              this.videoEl.muted = true;
+
+              // Manejar eventos de target
+              this.el.sceneEl.addEventListener("targetFound", () => {
+                console.log("Target encontrado - reproduciendo video");
+                this.videoEl.play().catch(function (error) {
+                  console.log("Error reproduciendo video:", error);
+                });
+              });
+
+              this.el.sceneEl.addEventListener("targetLost", () => {
+                console.log("Target perdido - pausando video");
+                this.videoEl.pause();
+              });
+            }
+          });
+        },
+
+        tick: function (time, deltaTime) {
+          if (!this.startTime) this.startTime = time;
+          const elapsedTime = (time - this.startTime) / 1000;
+
+          // Animar iconos
+          this.icons.forEach((icon, index) => {
+            if (!icon) return;
+
+            const iconTime = Math.max(0, elapsedTime - 1 - index * 0.5);
+            const scale = Math.min(1, iconTime);
+            const hoverEffect = 1 + 0.1 * Math.sin(elapsedTime * 2);
+
+            icon.object3D.scale.set(
+              scale * hoverEffect,
+              scale * hoverEffect,
+              scale * hoverEffect
+            );
+          });
+        },
+      });
+
+      AFRAME.registerComponent("clickable", {
+        init: function () {
+          this.el.addEventListener("click", () => {
+            const id = this.el.id;
+            switch (id) {
+              case "icon-linkedin":
+                window.open("https://linkedin.com/in/tu-perfil", "_blank");
+                break;
+              case "icon-github":
+                window.open("https://github.com/tu-usuario", "_blank");
+                break;
+              case "icon-instagram":
+                window.open("https://instagram.com/tu-usuario", "_blank");
+                break;
+              case "icon-web":
+                window.open("https://tu-sitio-web.com", "_blank");
+                break;
+              case "icon-youtube":
+                window.open(
+                  "https://www.youtube.com/watch?v=It6U0SCjf9M&list=RDIt6U0SCjf9M&start_radio=1",
+                  "_blank"
+                );
+                break;
+              case "malla-academica":
+                window.open(
+                  "https://www.usfq.edu.ec/sites/default/files/2024-04/malla-bloques-ciencias-computacion-es-en.pdf?itok=WwGaug6O2j",
+                  "_blank"
+                );
+            }
+          });
+        },
+      });
+
+      AFRAME.registerComponent("video-controls", {
+        init: function () {
+          const video = document.querySelector("#main-video");
+
+          this.el.addEventListener("click", () => {
+            if (video.paused) {
+              video.play();
+            } else {
+              video.pause();
+            }
+          });
+
+          // Reiniciar video cuando termine si no está en loop
+          video.addEventListener("ended", () => {
+            video.currentTime = 0;
+            video.play();
+          });
+        },
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const sceneEl = document.querySelector("a-scene");
+        let arSystem;
+
+        sceneEl.addEventListener("loaded", function () {
+          arSystem = sceneEl.systems["mindar-image-system"];
+        });
+
+        // Controles UI
+        const startButton = document.querySelector("#start-button");
+        const stopButton = document.querySelector("#stop-button");
+        const pauseButton = document.querySelector("#pause-button");
+        const muteButton = document.querySelector("#mute-button");
+        const videoEl = document.querySelector("#main-video");
+
+        startButton.addEventListener("click", () => arSystem.start());
+        stopButton.addEventListener("click", () => arSystem.stop());
+        pauseButton.addEventListener("click", () => arSystem.pause());
+
+        muteButton.addEventListener("click", () => {
+          videoEl.muted = !videoEl.muted;
+          muteButton.textContent = videoEl.muted ? "Unmute" : "Mute";
+        });
+
+        // Eventos AR
+        sceneEl.addEventListener("arReady", () => {
+          console.log("AR está listo");
+        });
+
+        sceneEl.addEventListener("arError", () => {
+          console.log("Error al iniciar AR");
+        });
+      });
+
+      AFRAME.registerComponent("rounded", {
+        init: function () {
+          const mesh = this.el.getObject3D("mesh");
+          if (!mesh) return;
+
+          mesh.material.transparent = true;
+          mesh.material.alphaTest = 0.5;
+
+          // Crear un canvas para la máscara de bordes redondeados
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = 1024;
+          canvas.height = 1024;
+
+          // Dibujar rectángulo redondeado
+          ctx.beginPath();
+          ctx.roundRect(0, 0, canvas.width, canvas.height, 60); // El valor 60 ajusta el radio de las esquinas
+          ctx.fillStyle = "white";
+          ctx.fill();
+
+          // Crear textura de máscara
+          const maskTexture = new THREE.CanvasTexture(canvas);
+          mesh.material.alphaMap = maskTexture;
+          mesh.material.needsUpdate = true;
+        },
+      });
+    </script>
+  </head>
+  <body>
+    <div class="controls">
+      <button id="start-button">Iniciar</button>
+      <button id="pause-button">Pausar</button>
+      <button id="mute-button">Unmute</button>
+      <button id="stop-button">Detener</button>
+    </div>
+
+    <a-scene
+      mindar-image="imageTargetSrc: ./markers/target.mind; autoStart: false;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      ar-controller
+    >
+      <a-camera
+        position="0 0 0"
+        look-controls="enabled: false"
+        cursor="fuse: false; rayOrigin: mouse;"
+        raycaster="far: 10000; objects: .clickable"
+      ></a-camera>
+
+      <a-assets>
+        <img id="card" src="./markers/Business Card Design.png" />
+
+        <a-asset-item id="avatarModel" src="./models/scene.gltf"></a-asset-item>
+
+        <img id="malla-img" src="./images/malla.png" />
+
+        <video
+          id="main-video"
+          src="./videos/video.mp4"
+          preload="auto"
+          loop="true"
+          crossorigin="anonymous"
+          playsinline
+          webkit-playsinline
+        ></video>
+
+        <img id="linkedin-icon" src="./icons/linkedin.png" />
+        <img id="github-icon" src="./icons/github.webp" />
+        <img id="web-icon" src="./icons/web.jpg" />
+        <img id="instagram-icon" src="./icons/instagram.webp" />
+        <img id="youtube-icon" src="./icons/youtubeicon.webp" />
+      </a-assets>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-plane
+          src="#card"
+          position="0 0 0"
+          height="0.552"
+          width="1"
+          rotation="0 0 0"
+          rounded
+        >
+        </a-plane>
+
+        <!-- Modelo 3D -->
+        <a-gltf-model
+          rotation="0 0 0"
+          position="0 0.4 0.1"
+          scale="0.150 0.150 0.150"
+          src="#avatarModel"
+          animation="property: position; to: 0 0.25 0.1; dur: 1000; easing: easeInOutQuad; loop: true; dir: alternate"
+        >
+        </a-gltf-model>
+
+        <!-- Video principal -->
+        <a-video
+          src="#main-video"
+          position="1.3 0 0"
+          width="1"
+          height="0.552"
+          rotation="0 0 0"
+          class="clickable"
+          video-controls
+          rounded
+        >
+        </a-video>
+
+        <a-image
+          id="malla-academica"
+          class="clickable"
+          src="#malla-img"
+          position="-1.3 0 0"
+          width="1"
+          height="0.552"
+          rotation="0 0 0"
+          clickable
+          rounded
+        ></a-image>
+
+        <!-- Iconos sociales -->
+        <a-image
+          id="icon-linkedin"
+          class="clickable"
+          src="#linkedin-icon"
+          position="-0.6 -0.5 0"
+          width="0.2"
+          height="0.2"
+          clickable
+          rounded
+        >
+        </a-image>
+
+        <a-image
+          id="icon-github"
+          class="clickable"
+          src="#github-icon"
+          position="-0.2 -0.5 0"
+          width="0.2"
+          height="0.2"
+          clickable
+          rounded
+        >
+        </a-image>
+
+        <a-image
+          id="icon-instagram"
+          class="clickable"
+          src="#instagram-icon"
+          position="0.2 -0.5 0"
+          width="0.2"
+          height="0.2"
+          clickable
+          rounded
+        ></a-image>
+
+        <a-image
+          id="icon-web"
+          class="clickable"
+          src="#web-icon"
+          position="0.6 -0.5 0"
+          width="0.2"
+          height="0.2"
+          clickable
+          rounded
+        >
+        </a-image>
+
+        <a-image
+          id="icon-youtube"
+          class="clickable"
+          src="#youtube-icon"
+          position="0.86 -0.3 0"
+          width="0.16"
+          height="0.16"
+          clickable
+        >
+        </a-image>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
