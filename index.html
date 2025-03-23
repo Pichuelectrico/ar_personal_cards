@@ -2,6 +2,8 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <style>
@@ -74,42 +76,90 @@
         },
       });
 
+      // AFRAME.registerComponent("clickable", {
+      //   init: function () {
+      //     this.el.addEventListener("click", () => {
+      //       const id = this.el.id;
+      //       switch (id) {
+      //         case "icon-linkedin":
+      //           window.open(
+      //             "https://linkedin.com/in/joshua-reinoso-cevallos-0b9b85286/",
+      //             "_blank"
+      //           );
+      //           break;
+      //         case "icon-github":
+      //           window.open("https://github.com/Pichuelectrico", "_blank");
+      //           break;
+      //         case "icon-instagram":
+      //           window.open("https://instagram.com/cmp.usfq/", "_blank");
+      //           break;
+      //         case "icon-web":
+      //           window.open(
+      //             "https://www.usfq.edu.ec/es/carreras-de-pregrado/ingenieria-en-ciencias-de-la-computacion",
+      //             "_blank"
+      //           );
+      //           break;
+      //         case "icon-youtube":
+      //           window.open(
+      //             "https://www.youtube.com/watch?v=It6U0SCjf9M&list=RDIt6U0SCjf9M&start_radio=1",
+      //             "_blank"
+      //           );
+      //           break;
+      //         case "malla-academica":
+      //           window.open(
+      //             "https://www.usfq.edu.ec/sites/default/files/2024-04/malla-bloques-ciencias-computacion-es-en.pdf?itok=WwGaug6O2j",
+      //             "_blank"
+      //           );
+      //       }
+      //     });
+      //   },
+      // });
+
       AFRAME.registerComponent("clickable", {
         init: function () {
-          this.el.addEventListener("click", () => {
+          const handleInteraction = (event) => {
+            event.preventDefault();
             const id = this.el.id;
+            let url = "";
+
+            // Asignar la URL según el ID del elemento
             switch (id) {
               case "icon-linkedin":
-                window.open(
-                  "https://linkedin.com/in/joshua-reinoso-cevallos-0b9b85286/",
-                  "_blank"
-                );
+                url =
+                  "https://linkedin.com/in/joshua-reinoso-cevallos-0b9b85286/";
                 break;
               case "icon-github":
-                window.open("https://github.com/Pichuelectrico", "_blank");
+                url = "https://github.com/Pichuelectrico";
                 break;
               case "icon-instagram":
-                window.open("https://instagram.com/cmp.usfq/", "_blank");
+                url = "https://instagram.com/cmp.usfq/";
                 break;
               case "icon-web":
-                window.open(
-                  "https://www.usfq.edu.ec/es/carreras-de-pregrado/ingenieria-en-ciencias-de-la-computacion",
-                  "_blank"
-                );
+                url =
+                  "https://www.usfq.edu.ec/es/carreras-de-pregrado/ingenieria-en-ciencias-de-la-computacion";
                 break;
               case "icon-youtube":
-                window.open(
-                  "https://www.youtube.com/watch?v=It6U0SCjf9M&list=RDIt6U0SCjf9M&start_radio=1",
-                  "_blank"
-                );
+                url =
+                  "https://www.youtube.com/watch?v=It6U0SCjf9M&list=RDIt6U0SCjf9M&start_radio=1";
                 break;
               case "malla-academica":
-                window.open(
-                  "https://www.usfq.edu.ec/sites/default/files/2024-04/malla-bloques-ciencias-computacion-es-en.pdf?itok=WwGaug6O2j",
-                  "_blank"
-                );
+                url =
+                  "https://www.usfq.edu.ec/sites/default/files/2024-04/malla-bloques-ciencias-computacion-es-en.pdf?itok=WwGaug6O2j";
+                break;
             }
-          });
+
+            // Abrir la URL en una nueva pestaña si existe
+            if (url) {
+              setTimeout(() => {
+                window.open(url, "_blank");
+              }, 100);
+            }
+          };
+
+          // Agregar eventos para clic y toque
+          this.el.addEventListener("click", handleInteraction);
+          this.el.addEventListener("touchstart", handleInteraction);
+          this.el.addEventListener("touchend", (e) => e.preventDefault());
         },
       });
 
